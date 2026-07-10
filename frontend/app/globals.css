@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #222222;
+  --muted: #717171;
+  --border: #dddddd;
+  --card: #ffffff;
+  --primary: #ff385c;
+  --primary-dark: #d70466;
+}
+
+.dark {
+  --background: #0f0f0f;
+  --foreground: #f2f2f2;
+  --muted: #a3a3a3;
+  --border: #2e2e2e;
+  --card: #171717;
+  --primary: #ff385c;
+  --primary-dark: #ff6b8a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-card: var(--card);
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --font-sans: var(--font-jakarta);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+* {
+  border-color: var(--border);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem;
+}
+
+.input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  outline: none;
+}
+.input:focus {
+  border-color: var(--foreground);
+}
