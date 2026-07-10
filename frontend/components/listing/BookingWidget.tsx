@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import Modal from "@/components/ui/Modal";
 import { useAuth } from "@/lib/auth-context";
 import { api, ApiError } from "@/lib/api";
+import { formatINR } from "@/lib/currency";
 import type { Booking, ListingDetail } from "@/lib/types";
 
 const SERVICE_FEE_RATE = 0.12;
@@ -72,7 +73,7 @@ export default function BookingWidget({ listing }: { listing: ListingDetail }) {
       <div className="sticky top-24 rounded-2xl border border-border p-6 shadow-lg">
         <div className="mb-4 flex items-baseline justify-between">
           <p className="text-lg">
-            <span className="text-xl font-semibold">${listing.price_per_night.toFixed(0)}</span>{" "}
+            <span className="text-xl font-semibold">{formatINR(listing.price_per_night)}</span>{" "}
             <span className="text-sm text-muted">night</span>
           </p>
           {listing.review_count > 0 && (
@@ -120,14 +121,14 @@ export default function BookingWidget({ listing }: { listing: ListingDetail }) {
           </div>
         </div>
 
-        <div className="mt-4 flex justify-center overflow-x-auto">
+        <div className="mt-4 w-full max-w-full box-border overflow-visible px-1">
           <DayPicker
             mode="range"
             numberOfMonths={1}
             selected={range}
             onSelect={setRange}
             disabled={[{ before: new Date() }, ...disabledRanges]}
-            className="text-sm"
+            className="w-full max-w-full text-sm"
           />
         </div>
         <p className="mb-2 text-center text-xs text-muted">Sleeps up to {listing.max_guests} guests</p>
@@ -143,21 +144,21 @@ export default function BookingWidget({ listing }: { listing: ListingDetail }) {
           <div className="mt-4 space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="underline">
-                ${listing.price_per_night.toFixed(0)} x {nights} night{nights > 1 ? "s" : ""}
+                {formatINR(listing.price_per_night)} x {nights} night{nights > 1 ? "s" : ""}
               </span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>{formatINR(subtotal)}</span>
             </div>
             <div className="flex justify-between">
               <span className="underline">Cleaning fee</span>
-              <span>${listing.cleaning_fee.toFixed(2)}</span>
+              <span>{formatINR(listing.cleaning_fee)}</span>
             </div>
             <div className="flex justify-between">
               <span className="underline">Service fee</span>
-              <span>${serviceFee.toFixed(2)}</span>
+              <span>{formatINR(serviceFee)}</span>
             </div>
             <div className="flex justify-between border-t border-border pt-3 font-semibold">
               <span>Total</span>
-              <span>${total.toFixed(2)}</span>
+              <span>{formatINR(total)}</span>
             </div>
           </div>
         )}
@@ -190,21 +191,21 @@ export default function BookingWidget({ listing }: { listing: ListingDetail }) {
           <div className="space-y-2 border-t border-border pt-4 text-sm">
             <div className="flex justify-between">
               <span>
-                ${listing.price_per_night.toFixed(0)} x {nights} nights
+                {formatINR(listing.price_per_night)} x {nights} nights
               </span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>{formatINR(subtotal)}</span>
             </div>
             <div className="flex justify-between">
               <span>Cleaning fee</span>
-              <span>${listing.cleaning_fee.toFixed(2)}</span>
+              <span>{formatINR(listing.cleaning_fee)}</span>
             </div>
             <div className="flex justify-between">
               <span>Service fee</span>
-              <span>${serviceFee.toFixed(2)}</span>
+              <span>{formatINR(serviceFee)}</span>
             </div>
             <div className="flex justify-between border-t border-border pt-3 text-base font-semibold">
-              <span>Total (USD)</span>
-              <span>${total.toFixed(2)}</span>
+              <span>Total (INR)</span>
+              <span>{formatINR(total)}</span>
             </div>
           </div>
 

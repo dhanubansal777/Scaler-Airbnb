@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { Heart, Star } from "lucide-react";
 import { useFavorites } from "@/lib/favorites-context";
+import { formatINR } from "@/lib/currency";
 import type { ListingCard as ListingCardType } from "@/lib/types";
 
-export default function ListingCard({ listing }: { listing: ListingCardType }) {
+export default function ListingCard({ listing, nights = 0 }: { listing: ListingCardType; nights?: number }) {
   const { isFavorited, toggleFavorite } = useFavorites();
   const favorited = isFavorited(listing.id);
+  const hasRating = listing.avg_rating > 0;
 
   return (
     <Link href={`/listings/${listing.id}`} className="group block">
@@ -41,19 +43,31 @@ export default function ListingCard({ listing }: { listing: ListingCardType }) {
       <div className="mt-2 space-y-0.5">
         <div className="flex items-start justify-between gap-2">
           <p className="truncate text-sm font-semibold">
-            {listing.city}, {listing.state || listing.country}
+            {listing.property_type} in {listing.city}
           </p>
-          {listing.avg_rating > 0 && (
+          {hasRating && nights === 0 && (
             <span className="flex shrink-0 items-center gap-1 text-sm">
               <Star size={12} className="fill-foreground" />
               {listing.avg_rating.toFixed(1)}
             </span>
           )}
         </div>
-        <p className="truncate text-sm text-muted">{listing.title}</p>
-        <p className="text-sm text-muted">{listing.room_type}</p>
         <p className="pt-1 text-sm">
-          <span className="font-semibold">${listing.price_per_night.toFixed(0)}</span> night
+          {nights > 0 ? (
+            <>
+              <span className="font-semibold">{formatINR(listing.price_per_night * nights)}</span> for {nights} night
+              {nights > 1 ? "s" : ""}
+            </>
+          ) : (
+            <>
+              <span className="font-semibold">{formatINR(listing.price_per_night)}</span> night
+            </>
+          )}
+          {hasRating && nights > 0 && (
+            <span className="ml-1 inline-flex items-center gap-1">
+              · <Star size={11} className="fill-foreground" /> {listing.avg_rating.toFixed(1)}
+            </span>
+          )}
         </p>
       </div>
     </Link>

@@ -72,7 +72,7 @@ export default function ListingDetailClient({ id }: { id: number }) {
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-12 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+        <div className="min-w-0 lg:col-span-2">
           <div className="flex items-start justify-between border-b border-border pb-8">
             <div>
               <h2 className="text-xl font-semibold">
@@ -119,7 +119,7 @@ export default function ListingDetailClient({ id }: { id: number }) {
           <ReviewsList reviews={reviews} avgRating={listing.avg_rating} reviewCount={listing.review_count} />
         </div>
 
-        <div>
+        <div className="min-w-0">
           <BookingWidget listing={listing} />
         </div>
       </div>

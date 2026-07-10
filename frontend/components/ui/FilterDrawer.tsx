@@ -68,7 +68,7 @@ export default function FilterDrawer({
                   min={0}
                   value={draft.minPrice}
                   onChange={(e) => setDraft((d) => ({ ...d, minPrice: e.target.value }))}
-                  placeholder="$0"
+                  placeholder="₹0"
                   className="w-full rounded-lg border border-border bg-transparent px-3 py-2.5 text-sm outline-none focus:border-foreground"
                 />
               </div>
@@ -80,7 +80,7 @@ export default function FilterDrawer({
                   min={0}
                   value={draft.maxPrice}
                   onChange={(e) => setDraft((d) => ({ ...d, maxPrice: e.target.value }))}
-                  placeholder="$1000+"
+                  placeholder="₹25,000+"
                   className="w-full rounded-lg border border-border bg-transparent px-3 py-2.5 text-sm outline-none focus:border-foreground"
                 />
               </div>

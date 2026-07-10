@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Star, Plus } from "lucide-react";
 import { api } from "@/lib/api";
+import { formatINR } from "@/lib/currency";
 import type { HostListing } from "@/lib/types";
 
 export default function HostListingsTab() {
@@ -53,7 +54,7 @@ export default function HostListingsTab() {
                   {listing.city}, {listing.state}
                 </p>
                 <div className="flex items-center justify-between pt-1 text-xs text-muted">
-                  <span>${listing.price_per_night.toFixed(0)} / night</span>
+                  <span>{formatINR(listing.price_per_night)} / night</span>
                   <span className="flex items-center gap-1">
                     <Star size={11} className="fill-foreground" />
                     {listing.avg_rating > 0 ? listing.avg_rating.toFixed(1) : "New"}

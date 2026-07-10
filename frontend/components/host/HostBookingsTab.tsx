@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { api } from "@/lib/api";
+import { formatINR } from "@/lib/currency";
 import type { HostBooking } from "@/lib/types";
 
 export default function HostBookingsTab() {
@@ -52,7 +53,7 @@ export default function HostBookingsTab() {
                 {format(new Date(b.check_in), "MMM d")} – {format(new Date(b.check_out), "MMM d, yyyy")}
               </td>
               <td className="px-4 py-3">{b.guests_count}</td>
-              <td className="px-4 py-3">${b.total_price.toFixed(2)}</td>
+              <td className="px-4 py-3">{formatINR(b.total_price)}</td>
               <td className="px-4 py-3">
                 <span
                   className={`rounded-full px-2.5 py-1 text-xs font-semibold ${

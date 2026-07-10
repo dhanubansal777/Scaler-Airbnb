@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import toast from "react-hot-toast";
-import { Menu, User as UserIcon, Moon, Sun, Home as HomeIcon, Heart, Luggage, LayoutGrid } from "lucide-react";
+import { Menu, User as UserIcon, Moon, Sun, Heart, Luggage, LayoutGrid } from "lucide-react";
+import { FaAirbnb } from "react-icons/fa6";
 import SearchBar from "./SearchBar";
 import { useAuth } from "@/lib/auth-context";
 
@@ -18,6 +19,8 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
+  const [scrolled, setScrolled] = useState(false);
+
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
@@ -28,7 +31,21 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
+  const isHome = pathname === "/";
+
+  useEffect(() => {
+    if (!isHome) {
+      setScrolled(false);
+      return;
+    }
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isHome]);
+
   const isHostArea = pathname?.startsWith("/host");
+  const compactSearch = !isHome || scrolled;
 
   const handleHostToggle = async () => {
     if (!user) {
@@ -48,16 +65,22 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-3 sm:px-6 lg:px-10">
         <div className="flex items-center justify-between gap-4">
-          <Link href="/" className="flex shrink-0 items-center gap-2 text-primary">
-            <HomeIcon size={28} strokeWidth={2.5} />
+          <Link href="/" className="flex shrink-0 items-center gap-0.5 text-primary">
+            <FaAirbnb size={28} />
             <span className="hidden text-xl font-bold tracking-tight sm:block">airbnb</span>
           </Link>
 
-          {!isHostArea && (
-            <div className="hidden flex-1 justify-center md:flex">
+          {!isHostArea && compactSearch && (
+            <div className="flex min-w-0 flex-1 justify-center">
+              <SearchBar compact />
+            </div>
+          )}
+
+          {!isHostArea && !compactSearch && (
+            <div className="hidden min-w-0 flex-1 justify-center md:flex">
               <SearchBar />
             </div>
           )}
@@ -151,7 +174,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {!isHostArea && (
+        {!isHostArea && !compactSearch && (
           <div className="flex justify-center md:hidden">
             <SearchBar />
           </div>

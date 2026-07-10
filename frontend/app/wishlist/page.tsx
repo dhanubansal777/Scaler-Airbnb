@@ -5,6 +5,7 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useFavorites } from "@/lib/favorites-context";
+import { DEFAULT_DISPLAY_NIGHTS } from "@/lib/currency";
 import type { ListingCard as ListingCardType } from "@/lib/types";
 import ListingGrid from "@/components/listing/ListingGrid";
 
@@ -49,7 +50,7 @@ export default function WishlistPage() {
           </Link>
         </div>
       ) : (
-        <ListingGrid listings={listings} />
+        <ListingGrid listings={listings} nights={DEFAULT_DISPLAY_NIGHTS} />
       )}
     </div>
   );

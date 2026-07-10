@@ -43,7 +43,7 @@ const emptyForm: FormState = {
   latitude: 0,
   longitude: 0,
   price_per_night: "",
-  cleaning_fee: "35",
+  cleaning_fee: "999",
   max_guests: "2",
   bedrooms: "1",
   beds: "1",
@@ -282,10 +282,10 @@ export default function ListingForm({ mode, listingId, initial }: { mode: "creat
 
       <Section title="Pricing">
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Price per night (USD)">
+          <Field label="Price per night (₹)">
             <input required type="number" min={1} value={form.price_per_night} onChange={(e) => update("price_per_night", e.target.value)} className="input" />
           </Field>
-          <Field label="Cleaning fee (USD)">
+          <Field label="Cleaning fee (₹)">
             <input type="number" min={0} value={form.cleaning_fee} onChange={(e) => update("cleaning_fee", e.target.value)} className="input" />
           </Field>
         </div>

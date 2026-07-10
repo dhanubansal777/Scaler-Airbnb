@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { MapPin } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
+import { formatINR } from "@/lib/currency";
 import type { Booking } from "@/lib/types";
 import ReviewModal from "@/components/trips/ReviewModal";
 
@@ -153,7 +154,7 @@ function BookingCard({
             {format(new Date(booking.check_in), "MMM d, yyyy")} – {format(new Date(booking.check_out), "MMM d, yyyy")} ·{" "}
             {booking.guests_count} guest{booking.guests_count > 1 ? "s" : ""}
           </p>
-          <p className="text-xs font-semibold">${booking.total_price.toFixed(2)} total</p>
+          <p className="text-xs font-semibold">{formatINR(booking.total_price)} total</p>
         </div>
         <div className="mt-2 flex gap-2">
           {onCancel && (

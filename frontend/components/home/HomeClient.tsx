@@ -1,8 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { differenceInCalendarDays } from "date-fns";
 import { api } from "@/lib/api";
+import { DEFAULT_DISPLAY_NIGHTS } from "@/lib/currency";
 import type { PaginatedListings } from "@/lib/types";
 import ListingGrid from "@/components/listing/ListingGrid";
 import Pagination from "@/components/ui/Pagination";
@@ -65,6 +67,12 @@ export default function HomeClient() {
     amenityIds: amenities ? amenities.split(",").map(Number) : [],
   };
 
+  const nights = useMemo(() => {
+    if (!checkin || !checkout) return DEFAULT_DISPLAY_NIGHTS;
+    const n = differenceInCalendarDays(new Date(checkout), new Date(checkin));
+    return n > 0 ? n : DEFAULT_DISPLAY_NIGHTS;
+  }, [checkin, checkout]);
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -101,7 +109,7 @@ export default function HomeClient() {
         </div>
       ) : (
         <>
-          <ListingGrid listings={data?.items || []} />
+          <ListingGrid listings={data?.items || []} nights={nights} />
           <Pagination page={page} totalPages={data?.total_pages || 1} onChange={(p) => updateParams({ page: String(p) })} />
         </>
       )}

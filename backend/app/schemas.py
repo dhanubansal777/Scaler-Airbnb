@@ -75,7 +75,7 @@ class ListingBase(BaseModel):
     latitude: float = 0.0
     longitude: float = 0.0
     price_per_night: float = Field(gt=0)
-    cleaning_fee: float = Field(ge=0, default=25.0)
+    cleaning_fee: float = Field(ge=0, default=999.0)
     max_guests: int = Field(ge=1, default=2)
     bedrooms: int = Field(ge=0, default=1)
     beds: int = Field(ge=0, default=1)

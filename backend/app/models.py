@@ -70,7 +70,7 @@ class Listing(Base):
     latitude: Mapped[float] = mapped_column(Float, default=0.0)
     longitude: Mapped[float] = mapped_column(Float, default=0.0)
     price_per_night: Mapped[float] = mapped_column(Float, nullable=False)
-    cleaning_fee: Mapped[float] = mapped_column(Float, default=25.0)
+    cleaning_fee: Mapped[float] = mapped_column(Float, default=999.0)
     max_guests: Mapped[int] = mapped_column(Integer, default=2)
     bedrooms: Mapped[int] = mapped_column(Integer, default=1)
     beds: Mapped[int] = mapped_column(Integer, default=1)

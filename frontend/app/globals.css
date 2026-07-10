@@ -51,10 +51,63 @@ body {
   scrollbar-width: none;
 }
 
+/* Leaflet's own CSS assigns its internal panes/controls z-index values up
+   to 1000 (see leaflet.css), which otherwise out-rank the sticky navbar
+   (z-30) once the page scrolls and the map's stacking context is compared
+   directly against page-level siblings. `isolation: isolate` contains all
+   of Leaflet's internal z-index values within the map's own box so they
+   can never render above the navbar or any other page chrome. */
 .leaflet-container {
   width: 100%;
   height: 100%;
   border-radius: 1rem;
+  position: relative;
+  isolation: isolate;
+  z-index: 0;
+}
+
+/* react-day-picker ships with a fixed-pixel-width day grid
+   (`--rdp-day-width` / `.rdp-months { max-width: fit-content }`) that can
+   exceed narrow sidebar/popover containers and force horizontal scroll,
+   clipping the month caption. Force the whole grid fluid instead so it
+   always exactly fills its container at any viewport width. */
+.rdp-root,
+.rdp-months,
+.rdp-month,
+.rdp-month_grid {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+/* .rdp-months is `display:flex`, and flex children default to
+   `min-width: auto`, which lets them refuse to shrink below their content's
+   natural width even when `width: 100%` is set. Force them shrinkable so
+   font-rendering differences across browsers can never reintroduce overflow. */
+.rdp-root,
+.rdp-months,
+.rdp-month {
+  min-width: 0 !important;
+}
+.rdp-month_grid {
+  table-layout: fixed !important;
+}
+.rdp-weekdays,
+.rdp-week {
+  width: 100%;
+}
+.rdp-weekday,
+.rdp-day {
+  width: auto !important;
+  max-width: none !important;
+}
+.rdp-month_caption {
+  padding-inline-start: 0.125rem;
+  overflow: visible;
+  min-width: 0;
+}
+.rdp-caption_label {
+  white-space: nowrap;
+  overflow: visible;
 }
 
 .input {

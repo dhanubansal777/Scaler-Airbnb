@@ -7,6 +7,48 @@ from .models import Amenity, Booking, BookingStatus, Favorite, Listing, ListingP
 
 random.seed(42)
 
+# Hand-verified Unsplash photo IDs depicting real bedrooms, living rooms,
+# kitchens, bathrooms, and house exteriors (checked to actually resolve and
+# show relevant listing-style photography, not just keyword-matched noise).
+INTERIOR_PHOTO_IDS = [
+    "1522708323590-d24dbb6b0267",
+    "1560448204-603b3fc33ddc",
+    "1600585154340-be6161a56a0c",
+    "1616486338812-3dadae4b4ace",
+    "1522771739844-6a9f6d5f14af",
+    "1493809842364-78817add7ffb",
+    "1484154218962-a197022b5858",
+    "1512918728675-ed5a9ecdebfd",
+    "1600607687939-ce8a6c25118c",
+    "1583847268964-b28dc8f51f92",
+    "1554995207-c18c203602cb",
+    "1560185008-b033106af5c3",
+    "1505873242700-f289a29e1e0f",
+    "1493663284031-b7e3aefcae8e",
+    "1556909114-f6e7ad7d3136",
+    "1556911220-e15b29be8c8f",
+    "1600489000022-c2086d79f9d4",
+    "1552321554-5fefe8c9ef14",
+    "1584622650111-993a426fbf0a",
+    "1571508601891-ca5e7a713859",
+    "1598928506311-c55ded91a20c",
+    "1584622781564-1d987f7333c1",
+    "1591088398332-8a7791972843",
+    "1560184897-ae75f418493e",
+    "1519710164239-da123dc03ef4",
+    "1502672260266-1c1ef2d93688",
+    "1567767292278-a4f21aa2d36e",
+    "1615874959474-d609969a20ed",
+    "1615873968403-89e068629265",
+    "1598300042247-d088f8ab3a91",
+    "1600210492486-724fe5c67fb0",
+    "1600121848594-d8644e57abab",
+    "1600566753086-00f18fb6b3ea",
+    "1600585152220-90363fe7e115",
+    "1616137466211-f939a420be84",
+    "1618221195710-dd6b41faaea6",
+]
+
 AMENITIES = [
     ("WiFi", "wifi"),
     ("Kitchen", "kitchen"),
@@ -75,10 +117,6 @@ REVIEW_COMMENTS = [
 ]
 
 
-def slugify(text: str) -> str:
-    return "".join(c.lower() if c.isalnum() else "-" for c in text).strip("-")
-
-
 def run_seed():
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
@@ -129,7 +167,7 @@ def run_seed():
             rtype = random.choice(ROOM_TYPES)
             title = random.choice(TITLE_TEMPLATES).format(ptype=ptype, city=city)
             host = hosts[idx % len(hosts)]
-            price = random.randint(65, 480)
+            price = random.randint(1800, 14000)
             max_guests = random.choice([2, 2, 3, 4, 4, 6, 8])
             bedrooms = random.randint(1, min(4, max_guests))
             beds = bedrooms + random.randint(0, 2)
@@ -149,7 +187,7 @@ def run_seed():
                 latitude=jitter_lat,
                 longitude=jitter_lng,
                 price_per_night=float(price),
-                cleaning_fee=float(random.choice([25, 35, 45, 60, 80])),
+                cleaning_fee=float(random.choice([599, 799, 999, 1499, 1999])),
                 max_guests=max_guests,
                 bedrooms=bedrooms,
                 beds=beds,
@@ -158,13 +196,13 @@ def run_seed():
             db.add(listing)
             db.flush()
 
-            slug = f"{slugify(title)}-{listing.id}"
             photo_count = random.randint(4, 6)
-            for p in range(photo_count):
+            chosen_photo_ids = random.sample(INTERIOR_PHOTO_IDS, k=photo_count)
+            for p, photo_id in enumerate(chosen_photo_ids):
                 db.add(
                     ListingPhoto(
                         listing_id=listing.id,
-                        url=f"https://picsum.photos/seed/{slug}-{p}/900/650",
+                        url=f"https://images.unsplash.com/photo-{photo_id}?w=900&h=650&fit=crop",
                         sort_order=p,
                     )
                 )
@@ -222,6 +260,7 @@ def run_seed():
 
         db.flush()
 
+        reviewed_listing_ids = set()
         for booking in bookings:
             if getattr(booking, "_is_past", False) and random.random() < 0.8:
                 db.add(
@@ -233,6 +272,46 @@ def run_seed():
                         comment=random.choice(REVIEW_COMMENTS),
                     )
                 )
+                reviewed_listing_ids.add(booking.listing_id)
+
+        db.flush()
+
+        # Guarantee every listing has at least one review so its rating/star always shows.
+        for listing in listings:
+            if listing.id in reviewed_listing_ids:
+                continue
+            guest = next((g for g in all_travelers if g.id != listing.host_id), all_travelers[0])
+            check_in = today - timedelta(days=random.randint(30, 250))
+            nights = random.randint(2, 5)
+            check_out = check_in + timedelta(days=nights)
+            subtotal = listing.price_per_night * nights
+            service_fee = round(subtotal * 0.12, 2)
+            total = round(subtotal + listing.cleaning_fee + service_fee, 2)
+
+            fallback_booking = Booking(
+                listing_id=listing.id,
+                guest_id=guest.id,
+                check_in=check_in,
+                check_out=check_out,
+                guests_count=random.randint(1, listing.max_guests),
+                nightly_rate_snapshot=listing.price_per_night,
+                cleaning_fee_snapshot=listing.cleaning_fee,
+                service_fee_snapshot=service_fee,
+                total_price=total,
+                status=BookingStatus.confirmed.value,
+            )
+            db.add(fallback_booking)
+            db.flush()
+            db.add(
+                Review(
+                    listing_id=listing.id,
+                    booking_id=fallback_booking.id,
+                    author_id=guest.id,
+                    rating=random.choice([4, 5, 5]),
+                    comment=random.choice(REVIEW_COMMENTS),
+                )
+            )
+            reviewed_listing_ids.add(listing.id)
 
         for guest in all_travelers:
             for listing in random.sample(listings, k=random.randint(1, 3)):
