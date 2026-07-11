@@ -24,6 +24,13 @@ Browse listings on an interactive map, book real date ranges with live price bre
 
 <sub>Frontend on Vercel, backend on Render (free tier — the API may take ~50s to wake up on first request after a period of inactivity).</sub>
 
+> **👉 Please use these seeded demo accounts to try the live demo** — all seeded accounts share the password **`password123`**. The backend runs on a free tier with an ephemeral disk, so accounts created via **Sign up** on the live demo won't survive a cold restart; the accounts below are re-seeded on every boot and always work.
+>
+> | Role | Email |
+> |---|---|
+> | Host | `host1@example.com` |
+> | Guest | `guest1@example.com` |
+
 </div>
 
 <br/>
