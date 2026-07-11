@@ -132,9 +132,10 @@ export default function HomeClient() {
   return (
     <>
       <div className={`mx-auto px-4 sm:px-6 lg:px-10 ${showMap ? "max-w-[1800px]" : "max-w-7xl"}`}>
-        <div className="flex items-center justify-between gap-6 border-b border-border py-4">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 border-b border-border py-4">
+          <div aria-hidden="true" />
           <CategoryFilterBar active={propertyType} onChange={(pt) => updateParams({ property_type: pt })} />
-          <div className="shrink-0">
+          <div className="flex shrink-0 justify-end">
             <FilterDrawer
               filters={filterState}
               onApply={(f) =>

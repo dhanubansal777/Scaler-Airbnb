@@ -21,7 +21,7 @@ export default function CategoryFilterBar({
   onChange: (propertyType?: string) => void;
 }) {
   return (
-    <div className="no-scrollbar flex min-w-0 flex-1 items-center justify-center gap-6 overflow-x-auto px-1">
+    <div className="no-scrollbar flex min-w-0 items-center justify-center gap-6 overflow-x-auto px-1">
       {CATEGORIES.map(({ label, icon: Icon, propertyType }) => {
         const isActive = propertyType === active || (!propertyType && !active);
         return (
