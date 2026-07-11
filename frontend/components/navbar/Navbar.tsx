@@ -10,11 +10,13 @@ import { Menu, User as UserIcon, Moon, Sun, Heart, Luggage, LayoutGrid, BadgeChe
 import { FaAirbnb } from "react-icons/fa6";
 import SearchBar from "./SearchBar";
 import { useAuth } from "@/lib/auth-context";
+import { useSearchState } from "@/lib/search-context";
 
 const logoFont = Poppins({ subsets: ["latin"], weight: ["700"] });
 
 export default function Navbar() {
   const { user, loading, openAuthModal, logout, becomeHost } = useAuth();
+  const { reset: resetSearch } = useSearchState();
   const { setTheme, resolvedTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -71,7 +73,14 @@ export default function Navbar() {
     <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-3 sm:px-6 lg:px-10">
         <div className="flex items-center justify-between gap-4">
-          <Link href="/" className="flex shrink-0 items-center gap-0.5 text-primary">
+          <Link
+            href="/"
+            onClick={() => {
+              resetSearch();
+              if (isHome) window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="flex shrink-0 items-center gap-0.5 text-primary"
+          >
             <FaAirbnb size={28} />
             <span className={`hidden text-xl tracking-tight sm:block ${logoFont.className}`}>airbnb</span>
           </Link>
