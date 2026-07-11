@@ -7,8 +7,10 @@ from fastapi.staticfiles import StaticFiles
 from .config import settings
 from .database import Base, engine
 from .routers import amenities, auth, bookings, favorites, host, listings, reviews
+from .seed import run_seed
 
 Base.metadata.create_all(bind=engine)
+run_seed()
 
 app = FastAPI(title="Airbnb Clone API", version="1.0.0")
 
