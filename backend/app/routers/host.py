@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from .. import models, schemas
 from ..database import get_db
 from ..deps import require_host
-from ..utils import cover_photo, listing_rating_stats
+from ..utils import cover_photo, is_superhost, listing_rating_stats
 
 router = APIRouter(prefix="/api/host", tags=["host"])
 
@@ -12,6 +12,7 @@ router = APIRouter(prefix="/api/host", tags=["host"])
 @router.get("/listings", response_model=list[schemas.HostListingOut])
 def host_listings(db: Session = Depends(get_db), current_user: models.User = Depends(require_host)):
     listings = db.query(models.Listing).filter(models.Listing.host_id == current_user.id).all()
+    host_is_superhost = is_superhost(db, current_user.id)
     result = []
     for listing in listings:
         avg_rating, review_count = listing_rating_stats(db, listing.id)
@@ -30,9 +31,12 @@ def host_listings(db: Session = Depends(get_db), current_user: models.User = Dep
                 property_type=listing.property_type,
                 room_type=listing.room_type,
                 price_per_night=listing.price_per_night,
+                latitude=listing.latitude,
+                longitude=listing.longitude,
                 cover_photo=cover_photo(listing),
                 avg_rating=avg_rating,
                 review_count=review_count,
+                is_superhost=host_is_superhost,
                 booking_count=booking_count,
             )
         )

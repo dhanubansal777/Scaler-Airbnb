@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from .. import models, schemas
 from ..database import get_db
 from ..deps import get_current_user
-from ..utils import cover_photo, listing_rating_stats
+from ..utils import cover_photo, is_superhost, listing_rating_stats
 
 router = APIRouter(prefix="/api/favorites", tags=["favorites"])
 
@@ -62,10 +62,13 @@ def my_favorites(db: Session = Depends(get_db), current_user: models.User = Depe
                 property_type=listing.property_type,
                 room_type=listing.room_type,
                 price_per_night=listing.price_per_night,
+                latitude=listing.latitude,
+                longitude=listing.longitude,
                 cover_photo=cover_photo(listing),
                 avg_rating=avg_rating,
                 review_count=review_count,
                 is_favorited=True,
+                is_superhost=is_superhost(db, listing.host_id),
             )
         )
     return result

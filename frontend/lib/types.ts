@@ -43,10 +43,13 @@ export interface ListingCard {
   property_type: string;
   room_type: string;
   price_per_night: number;
+  latitude: number;
+  longitude: number;
   cover_photo: string | null;
   avg_rating: number;
   review_count: number;
   is_favorited: boolean;
+  is_superhost: boolean;
 }
 
 export interface HostListing extends ListingCard {

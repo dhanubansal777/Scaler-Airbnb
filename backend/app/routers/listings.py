@@ -30,10 +30,13 @@ def _card_out(db: Session, listing: models.Listing, favorited_ids: set[int]) -> 
         property_type=listing.property_type,
         room_type=listing.room_type,
         price_per_night=listing.price_per_night,
+        latitude=listing.latitude,
+        longitude=listing.longitude,
         cover_photo=cover_photo(listing),
         avg_rating=avg_rating,
         review_count=review_count,
         is_favorited=listing.id in favorited_ids,
+        is_superhost=is_superhost(db, listing.host_id),
     )
 
 

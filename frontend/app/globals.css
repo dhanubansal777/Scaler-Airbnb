@@ -39,8 +39,15 @@ body {
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
-* {
-  border-color: var(--border);
+/* Wrapped in @layer base so it stays *below* Tailwind's utilities layer in
+   the cascade — otherwise this unlayered rule would win over every
+   border-color utility (e.g. `border-transparent`, `border-primary`)
+   regardless of specificity, since unlayered CSS always beats layered CSS
+   in the CSS cascade-layers spec. */
+@layer base {
+  * {
+    border-color: var(--border);
+  }
 }
 
 .no-scrollbar::-webkit-scrollbar {

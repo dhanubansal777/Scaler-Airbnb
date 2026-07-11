@@ -1,7 +1,16 @@
 import ListingCard from "./ListingCard";
 import type { ListingCard as ListingCardType } from "@/lib/types";
 
-export default function ListingGrid({ listings, nights = 0 }: { listings: ListingCardType[]; nights?: number }) {
+export default function ListingGrid({
+  listings,
+  nights = 0,
+  compact = false,
+}: {
+  listings: ListingCardType[];
+  nights?: number;
+  /** Narrower column count for the split list/map view, where the grid shares width with the map sidebar. */
+  compact?: boolean;
+}) {
   if (listings.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 py-24 text-center">
@@ -12,7 +21,11 @@ export default function ListingGrid({ listings, nights = 0 }: { listings: Listin
   }
 
   return (
-    <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+    <div
+      className={`grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 ${
+        compact ? "md:grid-cols-3" : "md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+      }`}
+    >
       {listings.map((listing) => (
         <ListingCard key={listing.id} listing={listing} nights={nights} />
       ))}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { differenceInCalendarDays } from "date-fns";
 import { api } from "@/lib/api";
@@ -10,6 +11,9 @@ import ListingGrid from "@/components/listing/ListingGrid";
 import Pagination from "@/components/ui/Pagination";
 import CategoryFilterBar from "@/components/ui/CategoryFilterBar";
 import FilterDrawer, { type FilterState } from "@/components/ui/FilterDrawer";
+import Footer from "@/components/home/Footer";
+
+const PriceMap = dynamic(() => import("@/components/listing/PriceMap"), { ssr: false });
 
 export default function HomeClient() {
   const router = useRouter();
@@ -26,6 +30,8 @@ export default function HomeClient() {
   const minPrice = searchParams.get("min_price") || "";
   const maxPrice = searchParams.get("max_price") || "";
   const amenities = searchParams.get("amenities") || "";
+
+  const showMap = Boolean(location);
 
   const updateParams = useCallback(
     (updates: Record<string, string | undefined>) => {
@@ -73,47 +79,64 @@ export default function HomeClient() {
     return n > 0 ? n : DEFAULT_DISPLAY_NIGHTS;
   }, [checkin, checkout]);
 
-  return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <CategoryFilterBar active={propertyType} onChange={(pt) => updateParams({ property_type: pt })} />
-      </div>
-      <div className="flex justify-end py-4">
-        <FilterDrawer
-          filters={filterState}
-          onApply={(f) =>
-            updateParams({
-              min_price: f.minPrice || undefined,
-              max_price: f.maxPrice || undefined,
-              amenities: f.amenityIds.length ? f.amenityIds.join(",") : undefined,
-            })
-          }
-        />
-      </div>
-
-      {location && (
-        <p className="pb-4 text-sm text-muted">
-          {data?.total ?? 0} stays {checkin && checkout ? "available" : "found"} in <b>{location}</b>
-        </p>
-      )}
-
-      {loading ? (
-        <div className="grid grid-cols-1 gap-x-6 gap-y-10 py-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="animate-pulse">
-              <div className="aspect-square w-full rounded-2xl bg-muted/20" />
-              <div className="mt-2 h-4 w-3/4 rounded bg-muted/20" />
-              <div className="mt-2 h-4 w-1/2 rounded bg-muted/20" />
-            </div>
-          ))}
+  const listResults = loading ? (
+    <div
+      className={`grid grid-cols-1 gap-x-6 gap-y-10 py-8 sm:grid-cols-2 ${
+        showMap ? "md:grid-cols-3" : "md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+      }`}
+    >
+      {Array.from({ length: 10 }).map((_, i) => (
+        <div key={i} className="animate-pulse">
+          <div className="aspect-square w-full rounded-2xl bg-muted/20" />
+          <div className="mt-2 h-4 w-3/4 rounded bg-muted/20" />
+          <div className="mt-2 h-4 w-1/2 rounded bg-muted/20" />
         </div>
-      ) : (
-        <>
-          <ListingGrid listings={data?.items || []} nights={nights} />
-          <Pagination page={page} totalPages={data?.total_pages || 1} onChange={(p) => updateParams({ page: String(p) })} />
-        </>
-      )}
-      <div className="h-16" />
+      ))}
     </div>
+  ) : (
+    <>
+      <ListingGrid listings={data?.items || []} nights={nights} compact={showMap} />
+      <Pagination page={page} totalPages={data?.total_pages || 1} onChange={(p) => updateParams({ page: String(p) })} />
+    </>
+  );
+
+  return (
+    <>
+      <div className={`mx-auto px-4 sm:px-6 lg:px-10 ${showMap ? "max-w-[1800px]" : "max-w-7xl"}`}>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <CategoryFilterBar active={propertyType} onChange={(pt) => updateParams({ property_type: pt })} />
+        </div>
+        <div className="flex justify-end py-4">
+          <FilterDrawer
+            filters={filterState}
+            onApply={(f) =>
+              updateParams({
+                min_price: f.minPrice || undefined,
+                max_price: f.maxPrice || undefined,
+                amenities: f.amenityIds.length ? f.amenityIds.join(",") : undefined,
+              })
+            }
+          />
+        </div>
+
+        {location && (
+          <p className="pb-4 text-sm text-muted">
+            {data?.total ?? 0} stays {checkin && checkout ? "available" : "found"} in <b>{location}</b>
+          </p>
+        )}
+
+        {showMap ? (
+          <div className="flex gap-8">
+            <div className="min-w-0 flex-1">{listResults}</div>
+            <div className="sticky top-24 hidden h-[calc(100vh-7rem)] w-[42%] shrink-0 lg:block">
+              <PriceMap listings={data?.items || []} />
+            </div>
+          </div>
+        ) : (
+          listResults
+        )}
+      </div>
+      <Footer />
+    </>
   );
 }

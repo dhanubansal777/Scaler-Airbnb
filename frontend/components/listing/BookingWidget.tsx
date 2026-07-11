@@ -39,6 +39,10 @@ export default function BookingWidget({ listing }: { listing: ListingDetail }) {
       toast.error("Select your check-in and check-out dates");
       return;
     }
+    if (nights <= 0) {
+      toast.error("Check-out must be after check-in — pick a second date to complete your range");
+      return;
+    }
     if (!user) {
       openAuthModal("login");
       return;

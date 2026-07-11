@@ -29,7 +29,7 @@ export default function LocationPicker({
   lng: number;
   onChange: (lat: number, lng: number) => void;
 }) {
-  const center: [number, number] = lat && lng ? [lat, lng] : [39.8283, -98.5795];
+  const center: [number, number] = lat && lng ? [lat, lng] : [22.5937, 78.9629];
 
   return (
     <div className="h-64 w-full overflow-hidden rounded-xl border border-border">

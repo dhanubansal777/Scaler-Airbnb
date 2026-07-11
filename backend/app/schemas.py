@@ -71,7 +71,7 @@ class ListingBase(BaseModel):
     room_type: str = "Entire place"
     city: str
     state: str = ""
-    country: str = "United States"
+    country: str = "India"
     latitude: float = 0.0
     longitude: float = 0.0
     price_per_night: float = Field(gt=0)
@@ -116,10 +116,13 @@ class ListingCardOut(BaseModel):
     property_type: str
     room_type: str
     price_per_night: float
+    latitude: float = 0.0
+    longitude: float = 0.0
     cover_photo: Optional[str] = None
     avg_rating: float = 0.0
     review_count: int = 0
     is_favorited: bool = False
+    is_superhost: bool = False
 
     model_config = {"from_attributes": True}
 

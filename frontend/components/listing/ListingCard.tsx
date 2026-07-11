@@ -24,6 +24,11 @@ export default function ListingCard({ listing, nights = 0 }: { listing: ListingC
         ) : (
           <div className="flex h-full w-full items-center justify-center text-muted">No photo</div>
         )}
+        {listing.is_superhost && (
+          <span className="absolute left-3 top-3 rounded-full bg-card px-2.5 py-1 text-xs font-semibold shadow">
+            Superhost
+          </span>
+        )}
         <button
           onClick={(e) => {
             e.preventDefault();

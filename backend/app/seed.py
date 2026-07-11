@@ -71,14 +71,14 @@ AMENITIES = [
 ]
 
 CITIES = [
-    ("New York", "NY", 40.7128, -74.0060),
-    ("Los Angeles", "CA", 34.0522, -118.2437),
-    ("Austin", "TX", 30.2672, -97.7431),
-    ("Miami", "FL", 25.7617, -80.1918),
-    ("Denver", "CO", 39.7392, -104.9903),
-    ("Seattle", "WA", 47.6062, -122.3321),
-    ("New Orleans", "LA", 29.9511, -90.0715),
-    ("Nashville", "TN", 36.1627, -86.7816),
+    ("Mumbai", "Maharashtra", 19.0760, 72.8777),
+    ("New Delhi", "Delhi", 28.6139, 77.2090),
+    ("Bengaluru", "Karnataka", 12.9716, 77.5946),
+    ("Goa", "Goa", 15.2993, 74.1240),
+    ("Jaipur", "Rajasthan", 26.9124, 75.7873),
+    ("Udaipur", "Rajasthan", 24.5854, 73.7125),
+    ("Gurugram", "Haryana", 28.4595, 77.0266),
+    ("Dehradun", "Uttarakhand", 30.3165, 78.0322),
 ]
 
 PROPERTY_TYPES = ["House", "Apartment", "Guesthouse", "Cabin", "Villa", "Loft", "Cottage"]
@@ -102,8 +102,8 @@ DESCRIPTION = (
     "and perfect for couples, families, or solo travelers looking to explore {city}."
 )
 
-HOST_NAMES = ["Maria Gonzalez", "James Whitfield", "Priya Nair", "Tom Baxter"]
-GUEST_NAMES = ["Alex Chen", "Sara Malik"]
+HOST_NAMES = ["Priya Nair", "Arjun Mehta", "Ananya Sharma", "Rohan Kapoor"]
+GUEST_NAMES = ["Aditya Verma", "Sneha Reddy"]
 
 REVIEW_COMMENTS = [
     "Amazing stay! The place was spotless and exactly as described.",
@@ -183,7 +183,7 @@ def run_seed():
                 room_type=rtype,
                 city=city,
                 state=state,
-                country="United States",
+                country="India",
                 latitude=jitter_lat,
                 longitude=jitter_lng,
                 price_per_night=float(price),
@@ -312,6 +312,32 @@ def run_seed():
                 )
             )
             reviewed_listing_ids.add(listing.id)
+
+        # Deliberately leave guest1's most recent past stay unreviewed, so the
+        # "leave a review" prompt (on both /trips and the listing page) has a
+        # real, reliable case to demonstrate against out of the box.
+        guest1 = guests[0]
+        unreviewed_listing = next((l for l in listings if l.host_id != guest1.id), listings[0])
+        unreviewed_nights = 3
+        unreviewed_check_in = today - timedelta(days=10)
+        unreviewed_check_out = unreviewed_check_in + timedelta(days=unreviewed_nights)
+        unreviewed_subtotal = unreviewed_listing.price_per_night * unreviewed_nights
+        unreviewed_service_fee = round(unreviewed_subtotal * 0.12, 2)
+        unreviewed_total = round(unreviewed_subtotal + unreviewed_listing.cleaning_fee + unreviewed_service_fee, 2)
+        db.add(
+            Booking(
+                listing_id=unreviewed_listing.id,
+                guest_id=guest1.id,
+                check_in=unreviewed_check_in,
+                check_out=unreviewed_check_out,
+                guests_count=1,
+                nightly_rate_snapshot=unreviewed_listing.price_per_night,
+                cleaning_fee_snapshot=unreviewed_listing.cleaning_fee,
+                service_fee_snapshot=unreviewed_service_fee,
+                total_price=unreviewed_total,
+                status=BookingStatus.confirmed.value,
+            )
+        )
 
         for guest in all_travelers:
             for listing in random.sample(listings, k=random.randint(1, 3)):

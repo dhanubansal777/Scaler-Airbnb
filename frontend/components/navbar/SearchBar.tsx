@@ -2,21 +2,20 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { DayPicker, type DateRange } from "react-day-picker";
+import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import { Search, Minus, Plus, MapPin } from "lucide-react";
 import { format } from "date-fns";
+import { useSearchState } from "@/lib/search-context";
 
-const POPULAR_CITIES = ["New York", "Los Angeles", "Austin", "Miami", "Denver", "Seattle", "New Orleans", "Nashville"];
+const POPULAR_CITIES = ["Mumbai", "New Delhi", "Bengaluru", "Goa", "Jaipur", "Udaipur", "Gurugram", "Dehradun"];
 
 type Field = "location" | "dates" | "guests" | null;
 
 export default function SearchBar({ compact = false }: { compact?: boolean }) {
   const router = useRouter();
+  const { location, setLocation, range, setRange, guests, setGuests, reset } = useSearchState();
   const [activeField, setActiveField] = useState<Field>(null);
-  const [location, setLocation] = useState("");
-  const [range, setRange] = useState<DateRange | undefined>();
-  const [guests, setGuests] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -179,7 +178,7 @@ export default function SearchBar({ compact = false }: { compact?: boolean }) {
               </div>
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => setGuests((g) => Math.max(1, g - 1))}
+                  onClick={() => setGuests(Math.max(1, guests - 1))}
                   className="flex h-8 w-8 items-center justify-center rounded-full border border-border disabled:opacity-30"
                   disabled={guests <= 1}
                 >
@@ -187,7 +186,7 @@ export default function SearchBar({ compact = false }: { compact?: boolean }) {
                 </button>
                 <span className="w-4 text-center text-sm">{guests}</span>
                 <button
-                  onClick={() => setGuests((g) => Math.min(16, g + 1))}
+                  onClick={() => setGuests(Math.min(16, guests + 1))}
                   className="flex h-8 w-8 items-center justify-center rounded-full border border-border"
                 >
                   <Plus size={14} />
@@ -197,14 +196,7 @@ export default function SearchBar({ compact = false }: { compact?: boolean }) {
           )}
 
           <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-            <button
-              onClick={() => {
-                setLocation("");
-                setRange(undefined);
-                setGuests(1);
-              }}
-              className="text-sm font-semibold underline"
-            >
+            <button onClick={reset} className="text-sm font-semibold underline">
               Clear all
             </button>
             <button

@@ -39,7 +39,7 @@ const emptyForm: FormState = {
   room_type: "Entire place",
   city: "",
   state: "",
-  country: "United States",
+  country: "India",
   latitude: 0,
   longitude: 0,
   price_per_night: "",

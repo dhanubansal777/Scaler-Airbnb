@@ -66,7 +66,7 @@ class Listing(Base):
     room_type: Mapped[str] = mapped_column(String(50), default="Entire place")
     city: Mapped[str] = mapped_column(String(100), nullable=False)
     state: Mapped[str] = mapped_column(String(100), default="")
-    country: Mapped[str] = mapped_column(String(100), default="United States")
+    country: Mapped[str] = mapped_column(String(100), default="India")
     latitude: Mapped[float] = mapped_column(Float, default=0.0)
     longitude: Mapped[float] = mapped_column(Float, default=0.0)
     price_per_night: Mapped[float] = mapped_column(Float, nullable=False)
