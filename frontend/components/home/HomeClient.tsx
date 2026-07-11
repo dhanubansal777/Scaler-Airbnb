@@ -169,7 +169,7 @@ export default function HomeClient() {
             />
           ))
         ) : (
-          <>
+          <div className="pt-6">
             {location && (
               <p className="pb-4 text-sm text-muted">
                 {data?.total ?? 0} stays {checkin && checkout ? "available" : "found"} in <b>{locationLabel}</b>
@@ -186,7 +186,7 @@ export default function HomeClient() {
             ) : (
               listResults
             )}
-          </>
+          </div>
         )}
       </div>
       <Footer />
