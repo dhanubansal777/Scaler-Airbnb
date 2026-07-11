@@ -20,9 +20,9 @@ Browse listings on an interactive map, book real date ranges with live price bre
 
 <br/>
 
-**[🔗 Live Demo](#) &nbsp;·&nbsp; [📦 GitHub Repo](https://github.com/dhanubansal777/Scaler-Airbnb) &nbsp;·&nbsp; [📖 Jump to Setup](#-getting-started)**
+**[🔗 Live Demo](https://frontend-neon-three-34.vercel.app) &nbsp;·&nbsp; [📦 GitHub Repo](https://github.com/dhanubansal777/Scaler-Airbnb) &nbsp;·&nbsp; [📖 Jump to Setup](#-getting-started)**
 
-<sub>Live demo link above should be filled in after deployment — see the <a href="#-deployment">Deployment</a> section.</sub>
+<sub>Frontend on Vercel, backend on Render (free tier — the API may take ~50s to wake up on first request after a period of inactivity).</sub>
 
 </div>
 
@@ -459,14 +459,14 @@ The app is two independently deployable services.
 
 **Backend → Render**
 1. Push this repo to GitHub (already done if you're reading this on GitHub 👋).
-2. On Render: **New → Web Service** → point at the `backend/` directory. Render will pick up `render.yaml` automatically (build: `pip install -r requirements.txt`, start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`).
-3. Set environment variables: `SECRET_KEY` (any random string), `CORS_ORIGINS` (your Vercel frontend URL, once you have it).
-4. After the first deploy, run `python -m app.seed` once via Render's shell to populate demo data. (SQLite persists on Render's disk for the life of the service — for a longer-lived deployment, swap in Postgres by changing `DATABASE_URL`, no code changes needed.)
+2. On Render: **New → Web Service** → point at the `backend/` directory. Render will pick up `render.yaml` automatically (build: `pip install -r requirements.txt`, start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`). `backend/.python-version` pins the runtime to `3.12.10` — without it, Render can default to a Python version too new for `pydantic-core`'s prebuilt wheels and fail the build.
+3. Set environment variables: `SECRET_KEY` (any random string), `CORS_ORIGINS` (your Vercel frontend URL, once you have it — comma-separate multiple origins).
+4. **No manual seeding step needed.** `app/main.py` calls `run_seed()` on startup, which is idempotent (skips if the database already has users) — the demo data appears automatically on first boot. This also matters because Render's free tier has an ephemeral filesystem (SQLite resets on every redeploy/restart) and no Shell access, so a one-time manual seed wouldn't survive anyway. For a longer-lived deployment, swap in Postgres by changing `DATABASE_URL`, no code changes needed.
 
 **Frontend → Vercel**
 1. Import this repo on Vercel, set the root directory to `frontend/`.
 2. Set environment variable `NEXT_PUBLIC_API_URL` to your Render backend URL.
-3. Deploy.
+3. Deploy, then add the resulting Vercel URL to the backend's `CORS_ORIGINS` env var on Render (this triggers a quick redeploy, no rebuild needed).
 
 <br/>
 
