@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import toast from "react-hot-toast";
-import { Menu, User as UserIcon, Moon, Sun, Heart, Luggage, LayoutGrid } from "lucide-react";
+import { Menu, User as UserIcon, Moon, Sun, Heart, Luggage, LayoutGrid, BadgeCheck } from "lucide-react";
 import { FaAirbnb } from "react-icons/fa6";
 import SearchBar from "./SearchBar";
 import { useAuth } from "@/lib/auth-context";
@@ -132,6 +132,12 @@ export default function Navbar() {
                         href="/host"
                         icon={<LayoutGrid size={16} />}
                         label={user.is_host ? "Host dashboard" : "Become a host"}
+                        onClick={() => setMenuOpen(false)}
+                      />
+                      <MenuLink
+                        href="/coming-soon?topic=Identity%20verification"
+                        icon={<BadgeCheck size={16} />}
+                        label="Verify identity"
                         onClick={() => setMenuOpen(false)}
                       />
                       <button
