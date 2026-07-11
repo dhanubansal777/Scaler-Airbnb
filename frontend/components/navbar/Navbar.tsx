@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { Poppins } from "next/font/google";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import toast from "react-hot-toast";
@@ -9,6 +10,8 @@ import { Menu, User as UserIcon, Moon, Sun, Heart, Luggage, LayoutGrid, BadgeChe
 import { FaAirbnb } from "react-icons/fa6";
 import SearchBar from "./SearchBar";
 import { useAuth } from "@/lib/auth-context";
+
+const logoFont = Poppins({ subsets: ["latin"], weight: ["700"] });
 
 export default function Navbar() {
   const { user, loading, openAuthModal, logout, becomeHost } = useAuth();
@@ -70,7 +73,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between gap-4">
           <Link href="/" className="flex shrink-0 items-center gap-0.5 text-primary">
             <FaAirbnb size={28} />
-            <span className="hidden text-xl font-bold tracking-tight sm:block">airbnb</span>
+            <span className={`hidden text-xl tracking-tight sm:block ${logoFont.className}`}>airbnb</span>
           </Link>
 
           {!isHostArea && compactSearch && (
