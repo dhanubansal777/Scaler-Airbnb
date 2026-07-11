@@ -79,8 +79,13 @@ def list_listings(
     query = db.query(models.Listing)
 
     if location:
-        like = f"%{location}%"
-        query = query.filter(or_(models.Listing.city.ilike(like), models.Listing.state.ilike(like), models.Listing.country.ilike(like)))
+        terms = [t.strip() for t in location.split(",") if t.strip()]
+        term_filters = [
+            or_(models.Listing.city.ilike(f"%{t}%"), models.Listing.state.ilike(f"%{t}%"), models.Listing.country.ilike(f"%{t}%"))
+            for t in terms
+        ]
+        if term_filters:
+            query = query.filter(or_(*term_filters))
     if guests:
         query = query.filter(models.Listing.max_guests >= guests)
     if min_price is not None:

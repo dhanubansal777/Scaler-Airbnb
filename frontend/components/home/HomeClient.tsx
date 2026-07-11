@@ -12,6 +12,8 @@ import Pagination from "@/components/ui/Pagination";
 import CategoryFilterBar from "@/components/ui/CategoryFilterBar";
 import FilterDrawer, { type FilterState } from "@/components/ui/FilterDrawer";
 import Footer from "@/components/home/Footer";
+import CategoryRow from "@/components/home/CategoryRow";
+import { NORTH_INDIA_CITIES } from "@/lib/regions";
 
 const PriceMap = dynamic(() => import("@/components/listing/PriceMap"), { ssr: false });
 
@@ -20,10 +22,12 @@ export default function HomeClient() {
   const searchParams = useSearchParams();
   const [data, setData] = useState<PaginatedListings | null>(null);
   const [loading, setLoading] = useState(true);
+  const [rowsData, setRowsData] = useState<PaginatedListings | null>(null);
 
   const page = Number(searchParams.get("page") || "1");
   const propertyType = searchParams.get("property_type") || undefined;
   const location = searchParams.get("location") || undefined;
+  const locationLabel = searchParams.get("label") || location;
   const checkin = searchParams.get("checkin") || undefined;
   const checkout = searchParams.get("checkout") || undefined;
   const guests = searchParams.get("guests") || undefined;
@@ -67,6 +71,26 @@ export default function HomeClient() {
       .finally(() => setLoading(false));
   }, [page, propertyType, location, checkin, checkout, guests, minPrice, maxPrice, amenities]);
 
+  const isDefaultView = !location && !propertyType && !minPrice && !maxPrice && !amenities && !checkin && !checkout && page === 1;
+
+  useEffect(() => {
+    if (!isDefaultView || rowsData) return;
+    api
+      .get<PaginatedListings>("/api/listings?page=1&page_size=50")
+      .then(setRowsData)
+      .catch(() => {});
+  }, [isDefaultView, rowsData]);
+
+  const northIndiaListings = useMemo(
+    () => (rowsData ? rowsData.items.filter((l) => NORTH_INDIA_CITIES.includes(l.city)).slice(0, 10) : []),
+    [rowsData]
+  );
+  const countryLabel = rowsData?.items[0]?.country || "India";
+  const countryListings = useMemo(
+    () => (rowsData ? [...rowsData.items].sort((a, b) => b.avg_rating - a.avg_rating).slice(0, 10) : []),
+    [rowsData]
+  );
+
   const filterState: FilterState = {
     minPrice,
     maxPrice,
@@ -103,6 +127,22 @@ export default function HomeClient() {
   return (
     <>
       <div className={`mx-auto px-4 sm:px-6 lg:px-10 ${showMap ? "max-w-[1800px]" : "max-w-7xl"}`}>
+        {isDefaultView && (
+          <>
+            <CategoryRow
+              title="Popular homes in North India"
+              listings={northIndiaListings}
+              nights={nights}
+              seeAllHref={`/?location=${encodeURIComponent(NORTH_INDIA_CITIES.join(","))}&label=${encodeURIComponent("North India")}`}
+            />
+            <CategoryRow
+              title={`Explore homes in ${countryLabel}`}
+              listings={countryListings}
+              nights={nights}
+              seeAllHref={`/?location=${encodeURIComponent(countryLabel)}&label=${encodeURIComponent(countryLabel)}`}
+            />
+          </>
+        )}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <CategoryFilterBar active={propertyType} onChange={(pt) => updateParams({ property_type: pt })} />
         </div>
@@ -121,7 +161,7 @@ export default function HomeClient() {
 
         {location && (
           <p className="pb-4 text-sm text-muted">
-            {data?.total ?? 0} stays {checkin && checkout ? "available" : "found"} in <b>{location}</b>
+            {data?.total ?? 0} stays {checkin && checkout ? "available" : "found"} in <b>{locationLabel}</b>
           </p>
         )}
 
