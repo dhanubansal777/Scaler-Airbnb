@@ -10,6 +10,7 @@
   --card: #ffffff;
   --primary: #ff385c;
   --primary-dark: #d70466;
+  color-scheme: light;
 }
 
 .dark {
@@ -20,6 +21,7 @@
   --card: #171717;
   --primary: #ff385c;
   --primary-dark: #ff6b8a;
+  color-scheme: dark;
 }
 
 @theme inline {
