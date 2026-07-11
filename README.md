@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🏡 Airbnb Clone
+# <img src="https://raw.githubusercontent.com/dhanubansal777/Scaler-Airbnb/main/frontend/app/icon.svg" width="36" height="36" valign="middle" alt="Airbnb logo" /> Airbnb Clone
 
 ### A full-stack, feature-complete Airbnb marketplace — built from scratch with Next.js and FastAPI
 
