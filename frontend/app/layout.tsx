@@ -11,7 +11,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "airbnb clone | Find your next stay",
+  title: "Airbnb Clone | Find your next stay",
   description: "A functional clone of Airbnb — browse, book, and host stays.",
 };
 
