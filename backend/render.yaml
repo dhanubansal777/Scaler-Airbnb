@@ -11,6 +11,6 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: http://localhost:3000
+        value: http://localhost:3000,https://frontend-neon-three-34.vercel.app
       - key: DATABASE_URL
         value: sqlite:///./app.db
