@@ -54,7 +54,7 @@ Browse listings on an interactive map, book real date ranges with live price bre
 - [API Reference](#-api-reference)
 - [Deployment](#-deployment)
 - [Bonus Features Checklist](#-bonus-features-checklist)
-- [Assumptions & Scope Notes](#-assumptions--scope-notes)
+- [Assumptions / Mocked Data / Notes](#-assumptions--mocked-data--notes)
 
 <br/>
 
@@ -484,22 +484,28 @@ The app is two independently deployable services.
 | Interactive map with listing pins | ✅ | Search results (price-pin map + boundary outline), listing detail (location map), host form (click-to-pin) |
 | Leave a review after a completed stay | ✅ | Enforced server-side: must own a past, confirmed, unreviewed booking. Surfaced on both My Trips and the listing page |
 | Superhost badges / ratings aggregation | ✅ | Computed live (≥4.8 avg rating, ≥3 reviews), shown on listing cards, listing detail, and the host section |
-| Image upload to cloud storage | 🟡 | Real file upload works end-to-end, but saves to local disk rather than a cloud provider — see [Assumptions](#-assumptions--scope-notes) |
+| Image upload to cloud storage | 🟡 | Real file upload works end-to-end, but saves to local disk rather than a cloud provider — see [Notes](#-assumptions--mocked-data--notes) |
 | Dark mode | ✅ | Real class-based toggle (`next-themes`), persisted, independent of OS preference |
 | Responsive design (mobile, tablet, desktop) | ✅ | Individually tested and fixed across breakpoints from 320px to 1500px+ |
 
 <br/>
 
-## 📝 Assumptions & Scope Notes
+## 📝 Assumptions / Mocked Data / Notes
 
+### Assumptions
+- **Auth is simplified** — hashed-password + JWT, no email verification/password reset/OAuth — sufficient to demonstrate a real guest/host distinction as the assignment asks for. Any account can self-serve into hosting via "Become a host," no approval step.
+- **SQLite** was used as specified in the assignment. The code only touches it through SQLAlchemy, so moving to Postgres for a production deployment is a one-line `DATABASE_URL` change, no query rewrites needed (the live backend already ships the `psycopg2` driver for this).
+- **Currency & locale**: the app is India-facing — all seed data uses real Indian cities (Mumbai, Delhi, Bengaluru, Goa, Jaipur, Udaipur, Gurugram, Dehradun) and all prices are shown in ₹ (INR) with proper Indian digit grouping.
+
+### Mocked / Placeholder Data
 - **Payments are fully mocked.** "Confirm and pay" creates the booking directly with no payment processor involved, exactly as the assignment allows.
 - **Messaging and identity verification** are explicitly out of scope per the assignment. Rather than leaving dead buttons, both route to a shared `/coming-soon` placeholder page.
-- **Auth is simplified** — hashed-password + JWT, no email verification/password reset/OAuth — sufficient to demonstrate a real guest/host distinction as the assignment asks for.
-- **Currency & locale**: the app is India-facing — all seed data uses real Indian cities (Mumbai, Delhi, Bengaluru, Goa, Jaipur, Udaipur, Gurugram, Dehradun) and all prices are shown in ₹ (INR) with proper Indian digit grouping.
-- **Listing photos** are a hand-curated set of real, verified Unsplash interior/exterior photos (not random stock images), matched to each listing's property type. Hosts can also paste any image URL or upload a file directly.
+- **Neighborhood boundary outlines** on the search map are a deterministic, organic approximation (seeded by each search's listing centroid) rather than real administrative boundary data, since no such dataset was in scope.
+- **Seed listing photos** are a hand-curated set of real, verified Unsplash interior/exterior photos (not random stock images), matched to each listing's property type — used only to populate demo data. Hosts creating their own listings paste any image URL or upload a real file directly.
+
+### Notes
 - **Image upload** goes to local disk (`backend/static/uploads/`) rather than a real cloud bucket. Swapping in S3/Cloudinary would only require changing the `upload_photo` handler in `listings.py` — the frontend already treats the returned URL generically.
-- **SQLite** was used as specified in the assignment. The code only touches it through SQLAlchemy, so moving to Postgres for a production deployment is a one-line `DATABASE_URL` change, no query rewrites needed.
-- **Neighborhood boundary outlines** on the map are a deterministic, organic approximation (seeded by each search's listing centroid) rather than real administrative boundary data, since no such dataset was in scope.
+- **The live backend runs on Render's free tier**, which has an ephemeral filesystem — the SQLite file resets on a cold restart (~15 min of inactivity), re-seeding just the demo accounts. Real signups on the live demo won't persist long-term unless `DATABASE_URL` is pointed at a hosted Postgres instance (see Assumptions above). Use the seeded demo accounts linked at the top of this README for reliable testing.
 
 <br/>
 
