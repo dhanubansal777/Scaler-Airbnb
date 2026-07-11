@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { Trash2, Upload, X } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import { AmenityIcon } from "@/lib/amenity-icons";
+import Select from "@/components/ui/Select";
 import { PROPERTY_TYPES, ROOM_TYPES } from "@/lib/types";
 import type { Amenity, ListingDetail } from "@/lib/types";
 
@@ -227,22 +228,10 @@ export default function ListingForm({ mode, listingId, initial }: { mode: "creat
         </Field>
         <div className="grid grid-cols-2 gap-4">
           <Field label="Property type">
-            <select value={form.property_type} onChange={(e) => update("property_type", e.target.value)} className="input">
-              {PROPERTY_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
+            <Select value={form.property_type} onChange={(v) => update("property_type", v)} options={PROPERTY_TYPES} />
           </Field>
           <Field label="Room type">
-            <select value={form.room_type} onChange={(e) => update("room_type", e.target.value)} className="input">
-              {ROOM_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
+            <Select value={form.room_type} onChange={(v) => update("room_type", v)} options={ROOM_TYPES} />
           </Field>
         </div>
       </Section>
