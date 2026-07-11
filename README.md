@@ -253,7 +253,7 @@ erDiagram
     REVIEWS {
         int id PK
         int listing_id FK
-        int booking_id FK UK
+        int booking_id FK "unique - one review per booking"
         int author_id FK
         int rating
         string comment
