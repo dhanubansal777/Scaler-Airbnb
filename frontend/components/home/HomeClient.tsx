@@ -13,7 +13,8 @@ import CategoryFilterBar from "@/components/ui/CategoryFilterBar";
 import FilterDrawer, { type FilterState } from "@/components/ui/FilterDrawer";
 import Footer from "@/components/home/Footer";
 import CategoryRow from "@/components/home/CategoryRow";
-import { NORTH_INDIA_CITIES } from "@/lib/regions";
+import { REGION_CITIES, regionForCity, sortRegions } from "@/lib/regions";
+import type { ListingCard as ListingCardType } from "@/lib/types";
 
 const PriceMap = dynamic(() => import("@/components/listing/PriceMap"), { ssr: false });
 
@@ -81,15 +82,19 @@ export default function HomeClient() {
       .catch(() => {});
   }, [isDefaultView, rowsData]);
 
-  const northIndiaListings = useMemo(
-    () => (rowsData ? rowsData.items.filter((l) => NORTH_INDIA_CITIES.includes(l.city)).slice(0, 10) : []),
-    [rowsData]
-  );
-  const countryLabel = rowsData?.items[0]?.country || "India";
-  const countryListings = useMemo(
-    () => (rowsData ? [...rowsData.items].sort((a, b) => b.avg_rating - a.avg_rating).slice(0, 10) : []),
-    [rowsData]
-  );
+  const regionGroups = useMemo(() => {
+    if (!rowsData) return [];
+    const groups = new Map<string, ListingCardType[]>();
+    for (const item of rowsData.items) {
+      const region = regionForCity(item.city);
+      if (!groups.has(region)) groups.set(region, []);
+      groups.get(region)!.push(item);
+    }
+    return sortRegions([...groups.keys()]).map((region) => ({
+      region,
+      listings: groups.get(region)!.slice(0, 10),
+    }));
+  }, [rowsData]);
 
   const filterState: FilterState = {
     minPrice,
@@ -127,22 +132,6 @@ export default function HomeClient() {
   return (
     <>
       <div className={`mx-auto px-4 sm:px-6 lg:px-10 ${showMap ? "max-w-[1800px]" : "max-w-7xl"}`}>
-        {isDefaultView && (
-          <>
-            <CategoryRow
-              title="Popular homes in North India"
-              listings={northIndiaListings}
-              nights={nights}
-              seeAllHref={`/?location=${encodeURIComponent(NORTH_INDIA_CITIES.join(","))}&label=${encodeURIComponent("North India")}`}
-            />
-            <CategoryRow
-              title={`Explore homes in ${countryLabel}`}
-              listings={countryListings}
-              nights={nights}
-              seeAllHref={`/?location=${encodeURIComponent(countryLabel)}&label=${encodeURIComponent(countryLabel)}`}
-            />
-          </>
-        )}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <CategoryFilterBar active={propertyType} onChange={(pt) => updateParams({ property_type: pt })} />
         </div>
@@ -159,21 +148,45 @@ export default function HomeClient() {
           />
         </div>
 
-        {location && (
-          <p className="pb-4 text-sm text-muted">
-            {data?.total ?? 0} stays {checkin && checkout ? "available" : "found"} in <b>{locationLabel}</b>
-          </p>
-        )}
-
-        {showMap ? (
-          <div className="flex gap-8">
-            <div className="min-w-0 flex-1">{listResults}</div>
-            <div className="sticky top-24 hidden h-[calc(100vh-7rem)] w-[42%] shrink-0 lg:block">
-              <PriceMap listings={data?.items || []} />
-            </div>
+        {isDefaultView && !rowsData ? (
+          <div className="grid grid-cols-2 gap-5 py-8 sm:grid-cols-4 md:grid-cols-5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="aspect-square w-full rounded-2xl bg-muted/20" />
+                <div className="mt-2 h-4 w-3/4 rounded bg-muted/20" />
+                <div className="mt-2 h-4 w-1/2 rounded bg-muted/20" />
+              </div>
+            ))}
           </div>
+        ) : isDefaultView ? (
+          regionGroups.map(({ region, listings }) => (
+            <CategoryRow
+              key={region}
+              title={`Popular homes in ${region}`}
+              listings={listings}
+              nights={nights}
+              seeAllHref={`/?location=${encodeURIComponent((REGION_CITIES[region] ?? [region]).join(","))}&label=${encodeURIComponent(region)}`}
+            />
+          ))
         ) : (
-          listResults
+          <>
+            {location && (
+              <p className="pb-4 text-sm text-muted">
+                {data?.total ?? 0} stays {checkin && checkout ? "available" : "found"} in <b>{locationLabel}</b>
+              </p>
+            )}
+
+            {showMap ? (
+              <div className="flex gap-8">
+                <div className="min-w-0 flex-1">{listResults}</div>
+                <div className="sticky top-24 hidden h-[calc(100vh-7rem)] w-[42%] shrink-0 lg:block">
+                  <PriceMap listings={data?.items || []} />
+                </div>
+              </div>
+            ) : (
+              listResults
+            )}
+          </>
         )}
       </div>
       <Footer />
