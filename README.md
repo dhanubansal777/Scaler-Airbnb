@@ -20,9 +20,9 @@ Browse listings on an interactive map, book real date ranges with live price bre
 
 <br/>
 
-**[🔗 Live Demo](https://frontend-neon-three-34.vercel.app) &nbsp;·&nbsp; [📦 GitHub Repo](https://github.com/dhanubansal777/Scaler-Airbnb) &nbsp;·&nbsp; [📖 Jump to Setup](#-getting-started)**
+**[🔗 Live Demo](https://frontend-neon-three-34.vercel.app) &nbsp;·&nbsp; [⚙️ Backend API](https://airbnb-clone-8gur.onrender.com/docs) &nbsp;·&nbsp; [📦 GitHub Repo](https://github.com/dhanubansal777/Scaler-Airbnb) &nbsp;·&nbsp; [📖 Jump to Setup](#-getting-started)**
 
-<sub>Frontend on Vercel, backend on Render (free tier — the API may take ~50s to wake up on first request after a period of inactivity).</sub>
+<sub>Frontend on Vercel, backend on Render (free tier — the API may take ~50s to wake up on first request after a period of inactivity). Backend API link above opens the interactive Swagger docs.</sub>
 
 > **👉 Please use these seeded demo accounts to try the live demo** — all seeded accounts share the password **`password123`**. The backend runs on a free tier with an ephemeral disk, so accounts created via **Sign up** on the live demo won't survive a cold restart; the accounts below are re-seeded on every boot and always work.
 >
