@@ -132,20 +132,20 @@ export default function HomeClient() {
   return (
     <>
       <div className={`mx-auto px-4 sm:px-6 lg:px-10 ${showMap ? "max-w-[1800px]" : "max-w-7xl"}`}>
-        <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-6 border-b border-border py-4">
           <CategoryFilterBar active={propertyType} onChange={(pt) => updateParams({ property_type: pt })} />
-        </div>
-        <div className="flex justify-end py-4">
-          <FilterDrawer
-            filters={filterState}
-            onApply={(f) =>
-              updateParams({
-                min_price: f.minPrice || undefined,
-                max_price: f.maxPrice || undefined,
-                amenities: f.amenityIds.length ? f.amenityIds.join(",") : undefined,
-              })
-            }
-          />
+          <div className="shrink-0">
+            <FilterDrawer
+              filters={filterState}
+              onApply={(f) =>
+                updateParams({
+                  min_price: f.minPrice || undefined,
+                  max_price: f.maxPrice || undefined,
+                  amenities: f.amenityIds.length ? f.amenityIds.join(",") : undefined,
+                })
+              }
+            />
+          </div>
         </div>
 
         {isDefaultView && !rowsData ? (
