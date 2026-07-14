@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping backend health endpoint
-        run: curl -sf --max-time 60 https://airbnb-clone-8gur.onrender.com/api/health
+        run: curl -sf --max-time 120 --retry 3 --retry-delay 10 --retry-all-errors https://airbnb-clone-8gur.onrender.com/api/health
