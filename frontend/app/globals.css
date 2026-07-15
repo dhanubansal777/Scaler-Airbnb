@@ -119,6 +119,18 @@ body {
   overflow: visible;
 }
 
+/* react-day-picker's default range-highlight color (#f0f0ff, near-white)
+   is a static value that never adapts to dark mode, washing out the days
+   between check-in and check-out. Override it with a translucent tint of
+   the app's own brand color instead, which stays readable in both themes
+   and matches the selected-day circles (also re-pointed at the brand
+   color instead of the library's default blue) rather than clashing. */
+.rdp-root {
+  --rdp-accent-color: var(--primary);
+  --rdp-range_middle-background-color: color-mix(in srgb, var(--primary) 20%, transparent);
+  --rdp-range_middle-color: var(--foreground);
+}
+
 .input {
   width: 100%;
   border-radius: 0.5rem;
