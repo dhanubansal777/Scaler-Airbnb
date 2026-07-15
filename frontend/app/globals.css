@@ -124,11 +124,17 @@ body {
    between check-in and check-out. Override it with a translucent tint of
    the app's own brand color instead, which stays readable in both themes
    and matches the selected-day circles (also re-pointed at the brand
-   color instead of the library's default blue) rather than clashing. */
+   color instead of the library's default blue) rather than clashing.
+   !important is required here: react-day-picker/style.css is imported
+   inside BookingWidget.tsx (a component-level import), and Next.js's
+   bundler doesn't guarantee that loads before this global stylesheet —
+   without !important the library's own defaults can win the cascade and
+   silently undo this override, which is exactly what happened in dark
+   mode even though it looked fixed in light mode. */
 .rdp-root {
-  --rdp-accent-color: var(--primary);
-  --rdp-range_middle-background-color: color-mix(in srgb, var(--primary) 20%, transparent);
-  --rdp-range_middle-color: var(--foreground);
+  --rdp-accent-color: var(--primary) !important;
+  --rdp-range_middle-background-color: color-mix(in srgb, var(--primary) 28%, transparent) !important;
+  --rdp-range_middle-color: var(--foreground) !important;
 }
 
 .input {
